@@ -26,8 +26,6 @@ public class JavaAlert {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.err.println("===================== Done =====================");
     }
 
     private static void showMessageWindow(String message, ThreadLock threadLock) {
@@ -38,7 +36,6 @@ public class JavaAlert {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.err.println("===================== Close triggered =====================");
                 threadLock.resumeThread();
                 e.getWindow().dispose();
             }
