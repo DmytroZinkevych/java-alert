@@ -9,8 +9,12 @@ public class JavaAlert {
 
     private static class ThreadLock {
 
-        public synchronized void suspendThread() throws InterruptedException {
-            wait();
+        public synchronized void suspendThread() {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         public synchronized void resumeThread() {
@@ -21,11 +25,7 @@ public class JavaAlert {
     public static void alert(String message) {
         ThreadLock threadLock = new ThreadLock();
         showMessageWindow(message, threadLock);
-        try {
-            threadLock.suspendThread();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        threadLock.suspendThread();
     }
 
     private static void showMessageWindow(String message, ThreadLock threadLock) {
