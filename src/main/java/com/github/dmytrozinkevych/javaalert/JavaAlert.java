@@ -2,6 +2,7 @@ package com.github.dmytrozinkevych.javaalert;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class JavaAlert {
@@ -34,7 +35,14 @@ public class JavaAlert {
         //TODO: handle newlines in a message
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("Java alert");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.err.println("===================== Close triggered =====================");
+                threadLock.resumeThread();
+                e.getWindow().dispose();
+            }
+        });
 
         JPanel panel = new JPanel();
 
@@ -47,11 +55,7 @@ public class JavaAlert {
 
         JButton button = new JButton("OK");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.addActionListener(event -> {
-            System.err.println("===================== Button clicked =====================");
-            threadLock.resumeThread();
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-        });
+        button.addActionListener(event -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
         panel.add(button);
 
         frame.add(panel);
