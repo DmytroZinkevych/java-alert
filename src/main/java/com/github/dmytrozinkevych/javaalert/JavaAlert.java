@@ -2,15 +2,34 @@ package com.github.dmytrozinkevych.javaalert;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 
 public class JavaAlert {
+
+    private static class ThreadLock {
+
+        public synchronized void suspendThread() throws InterruptedException {
+            wait();
+        }
+
+        public synchronized void resumeThread() {
+            notifyAll();
+        }
+    }
+
     public static void alert(String message) {
-        showMessageWindow(message);
+        ThreadLock threadLock = new ThreadLock();
+        showMessageWindow(message, threadLock);
+        try {
+            threadLock.suspendThread();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         System.err.println("===================== Done =====================");
     }
 
-    private static void showMessageWindow(String message) {
+    private static void showMessageWindow(String message, ThreadLock threadLock) {
         //TODO: margins, min and max window sizes
         //TODO: handle newlines in a message
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -28,16 +47,15 @@ public class JavaAlert {
 
         JButton button = new JButton("OK");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.addActionListener(JavaAlert::continueExecution);
+        button.addActionListener(event -> {
+            System.err.println("===================== Button clicked =====================");
+            threadLock.resumeThread();
+            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+        });
         panel.add(button);
 
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
-    }
-
-    private static void continueExecution(ActionEvent e) {
-        System.err.println("===================== Button clicked =====================");
-        //TODO: implement
     }
 }
