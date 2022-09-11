@@ -2,20 +2,44 @@ package com.github.dmytrozinkevych.javaalert;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class JavaAlert {
-    public static void alert(String message) {
-        showMessageWindow(message);
-        System.err.println("===================== Done =====================");
+
+    private static class ThreadLock {
+
+        public synchronized void suspendThread() throws InterruptedException {
+            wait();
+        }
+
+        public synchronized void resumeThread() {
+            notifyAll();
+        }
     }
 
-    private static void showMessageWindow(String message) {
+    public static void alert(String message) {
+        ThreadLock threadLock = new ThreadLock();
+        showMessageWindow(message, threadLock);
+        try {
+            threadLock.suspendThread();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void showMessageWindow(String message, ThreadLock threadLock) {
         //TODO: margins, min and max window sizes
         //TODO: handle newlines in a message
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("Java alert");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                threadLock.resumeThread();
+                e.getWindow().dispose();
+            }
+        });
 
         JPanel panel = new JPanel();
 
@@ -28,16 +52,11 @@ public class JavaAlert {
 
         JButton button = new JButton("OK");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.addActionListener(JavaAlert::continueExecution);
+        button.addActionListener(event -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
         panel.add(button);
 
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
-    }
-
-    private static void continueExecution(ActionEvent e) {
-        System.err.println("===================== Button clicked =====================");
-        //TODO: implement
     }
 }
