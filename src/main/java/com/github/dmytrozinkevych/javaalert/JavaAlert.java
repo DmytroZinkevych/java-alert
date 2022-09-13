@@ -29,10 +29,10 @@ public class JavaAlert {
     }
 
     private static void showMessageWindow(String message, ThreadLock threadLock) {
-        //TODO: margins, min and max window sizes
-        //TODO: handle newlines in a message
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("Java alert");
+        frame.setMinimumSize(new Dimension(200, 120));
+        frame.setPreferredSize(new Dimension(400, 250));
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -46,9 +46,15 @@ public class JavaAlert {
         BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxLayout);
 
-        JLabel label = new JLabel(message);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(label);
+        JTextArea textArea = new JTextArea(message);
+        textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, textArea.getFont().getSize()));
+        textArea.setMargin(new Insets(5, 10, 5, 10));
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        panel.add(scrollPane);
 
         JButton button = new JButton("OK");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -57,6 +63,7 @@ public class JavaAlert {
 
         frame.add(panel);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 }
