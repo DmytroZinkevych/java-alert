@@ -66,4 +66,6 @@ public class JavaAlert {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    private JavaAlert() { }
 }
