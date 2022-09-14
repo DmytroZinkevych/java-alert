@@ -29,8 +29,12 @@ public class JavaAlert {
     }
 
     private static void showMessageWindow(String message, ThreadLock threadLock) {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        JFrame frame = new JFrame("Java alert");
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JFrame frame = new JFrame("Java Alert");
         frame.setMinimumSize(new Dimension(200, 120));
         frame.setPreferredSize(new Dimension(400, 250));
         frame.addWindowListener(new WindowAdapter() {
@@ -59,7 +63,10 @@ public class JavaAlert {
         JButton button = new JButton("OK");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.addActionListener(event -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
+
+        panel.add(Box.createRigidArea(new Dimension(0,5)));
         panel.add(button);
+        panel.add(Box.createRigidArea(new Dimension(0,5)));
 
         frame.add(panel);
         frame.pack();
