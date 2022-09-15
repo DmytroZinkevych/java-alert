@@ -1,4 +1,4 @@
-package com.github.dmytrozinkevych.javaalert;
+package io.github.dmytrozinkevych.javaalert;
 
 import javax.swing.*;
 import java.awt.*;
